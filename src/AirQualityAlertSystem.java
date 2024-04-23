@@ -52,23 +52,15 @@ public class AirQualityAlertSystem {
             if (pm25AlertCount >= 2) {
                 System.out.println("초미세먼지 PM2.5 경보 발령");
             }
-            if (pm10AlertCount >= 2) {
+            else if (pm10AlertCount >= 2) {
                 System.out.println("미세먼지 PM10 경보 발령");
             }
-            if (pm25WatchCount >= 2) {
+            else if (pm25WatchCount >= 2) {
                 System.out.println("초미세먼지 PM2.5 주의보 발령");
             }
-            if (pm10WatchCount >= 2) {
+            else if (pm10WatchCount >= 2) {
                 System.out.println("미세먼지 PM10 주의보 발령");
             }
-
-
-
-
-//            // 큐 관리: 2시간 이상 지난 데이터는 제거
-//            if (dataQueue.size() > 2) {
-//                dataQueue.poll();
-//            }
         }
     }
 }
