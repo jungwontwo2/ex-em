@@ -1,3 +1,4 @@
+import java.sql.*;
 import java.util.Queue;
 import java.util.LinkedList;
 
@@ -12,12 +13,10 @@ public class AirQualityAlertSystem {
     public void processAirQualityData(AirQualityData data) {
         // 데이터를 큐에 추가
         dataQueue.offer(data);
-
-        // 큐를 검사하여 2시간 이상 지속되는 높은 농도 확인
-        checkForAlerts();
     }
 
-    private void checkForAlerts() {
+    // 큐를 검사하여 2시간 이상 지속되는 높은 농도 확인
+    public void checkForAlerts() {
         int pm10WatchCount = 0;
         int pm10AlertCount = 0;
         int pm25WatchCount = 0;
@@ -50,17 +49,36 @@ public class AirQualityAlertSystem {
 
             // 주의보 및 경보 발생 조건 검사
             if (pm25AlertCount >= 2) {
-                System.out.println("초미세먼지 PM2.5 경보 발령");
+                insertAlertIntoDatabase(data.getMeasureStation(),1,data.getDate());
             }
             else if (pm10AlertCount >= 2) {
-                System.out.println("미세먼지 PM10 경보 발령");
+                insertAlertIntoDatabase(data.getMeasureStation(),2,data.getDate());
             }
             else if (pm25WatchCount >= 2) {
-                System.out.println("초미세먼지 PM2.5 주의보 발령");
+                insertAlertIntoDatabase(data.getMeasureStation(),3,data.getDate());
             }
             else if (pm10WatchCount >= 2) {
-                System.out.println("미세먼지 PM10 주의보 발령");
+                insertAlertIntoDatabase(data.getMeasureStation(),4,data.getDate());
             }
+        }
+    }
+
+    private void insertAlertIntoDatabase(String station, Integer alertLevel, String alertTime) {
+        // 데이터베이스 연결 및 쿼리 실행 코드
+        String sql = "INSERT INTO alerts (station, alert_level, alert_time) VALUES (?, ?, ?)";
+        String jdbcUrl = DatabaseInitialization.getFullUrl();
+        String dbUser = DatabaseInitialization.getUser();
+        String dbPassword = DatabaseInitialization.getPassword();
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPassword);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, station);
+            pstmt.setInt(2, alertLevel);
+            Timestamp alertTimestamp = Timestamp.valueOf(alertTime + ":00:00");
+            pstmt.setTimestamp(3, alertTimestamp);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }

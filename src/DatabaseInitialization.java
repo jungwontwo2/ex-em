@@ -10,6 +10,15 @@ public class DatabaseInitialization {
     private static final String USER = "exemAirQuality";
     private static final String PASSWORD = "exemAirQualityPassword";
 
+    public static String getFullUrl(){
+        return FULL_URL;
+    }
+    public static String getUser() {
+        return USER;
+    }
+    public static String getPassword() {
+        return PASSWORD;
+    }
     public static void createUser(){
         try {
             // 데이터베이스 연결
@@ -56,7 +65,7 @@ public class DatabaseInitialization {
         String sqlCreateTable = "CREATE TABLE IF NOT EXISTS alerts (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "station VARCHAR(255) NOT NULL," +
-                "alert_level VARCHAR(255) NOT NULL," +
+                "alert_level INTEGER NOT NULL," +
                 "alert_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
                 ")";
 

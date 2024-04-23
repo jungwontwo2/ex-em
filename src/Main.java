@@ -9,17 +9,16 @@ public class Main {
     public static void main(String[] args) {
         ObjectMapper objectMapper = new ObjectMapper();
         AirQualityAlertSystem alertSystem = new AirQualityAlertSystem();
-        DatabaseInitialization.createUser();
-        DatabaseInitialization.createDatabase();
-        DatabaseInitialization.createTable();
+//        DatabaseInitialization.createUser();
+//        DatabaseInitialization.createDatabase();
+//        DatabaseInitialization.createTable();
         try {
             List<AirQualityData> dataList = objectMapper.readValue(new File("2023년3월_서울시_미세먼지.json"), new TypeReference<List<AirQualityData>>(){});
-
             // 데이터 리스트 사용
             for (AirQualityData data : dataList) {
-//                System.out.println(data.getDate() + ", PM10: " + data.getPM10() + ", PM2.5: " + data.getPM2_5());
                 alertSystem.processAirQualityData(data);
             }
+            alertSystem.checkForAlerts();
         } catch (IOException e) {
             e.printStackTrace();
         }
