@@ -61,7 +61,7 @@ public class DatabaseInitialization {
         }
     }
 
-    public static void createTable() {
+    public static void createAlertTable() {
         String sqlCreateTable = "CREATE TABLE IF NOT EXISTS alerts (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "station VARCHAR(255) NOT NULL," +
@@ -73,7 +73,24 @@ public class DatabaseInitialization {
              Statement stmt = conn.createStatement()) {
 
             stmt.executeUpdate(sqlCreateTable);
-            System.out.println("Table created successfully...");
+            System.out.println("Alert Table created successfully...");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void createChecktimeTable() {
+        String sqlCreateTable = "CREATE TABLE IF NOT EXISTS Checktime (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY," +
+                "station VARCHAR(255) NOT NULL," +
+                "machine VARCHAR(255) NOT NULL," +
+                "alert_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
+                ")";
+
+        try (Connection conn = DriverManager.getConnection(FULL_URL, USER, PASSWORD);
+             Statement stmt = conn.createStatement()) {
+
+            stmt.executeUpdate(sqlCreateTable);
+            System.out.println("Checktime Table created successfully...");
         } catch (SQLException e) {
             e.printStackTrace();
         }

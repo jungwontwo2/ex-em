@@ -23,6 +23,17 @@ public class AirQualityAlertSystem {
         int pm25AlertCount = 0;
 
         for (AirQualityData data : dataQueue) {
+            if(data.getPM10()==0 & data.getPM2_5()==0){
+                insertChecktimeIntoDatabase(data.getMeasureStation(),"모든 기계",data.getDate());
+            }
+            else if(data.getPM10()==0){
+                insertChecktimeIntoDatabase(data.getMeasureStation(),"미세먼지",data.getDate());
+            }
+            else if(data.getPM2_5()==0){
+                insertChecktimeIntoDatabase(data.getMeasureStation(),"초미세먼지",data.getDate());
+            }
+
+
             // PM10 검사
             if (data.getPM10() >= PM10_ALERT) {
                 pm10AlertCount++;
@@ -74,6 +85,25 @@ public class AirQualityAlertSystem {
 
             pstmt.setString(1, station);
             pstmt.setInt(2, alertLevel);
+            Timestamp alertTimestamp = Timestamp.valueOf(alertTime + ":00:00");
+            pstmt.setTimestamp(3, alertTimestamp);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void insertChecktimeIntoDatabase(String station, String machine, String alertTime) {
+        // 데이터베이스 연결 및 쿼리 실행 코드
+        String sql = "INSERT INTO checktime (station, machine, alert_time) VALUES (?, ?, ?)";
+        String jdbcUrl = DatabaseInitialization.getFullUrl();
+        String dbUser = DatabaseInitialization.getUser();
+        String dbPassword = DatabaseInitialization.getPassword();
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, dbUser, dbPassword);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, station);
+            pstmt.setString(2, machine);
             Timestamp alertTimestamp = Timestamp.valueOf(alertTime + ":00:00");
             pstmt.setTimestamp(3, alertTimestamp);
             pstmt.executeUpdate();
